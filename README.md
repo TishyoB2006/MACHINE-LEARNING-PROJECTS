@@ -46,11 +46,41 @@ Predicting flight ticket prices from features like airline, source/destination, 
 
 ## Mushroom Edible/Poisonous Prediction
 
-<!-- TODO: fill in — dataset source, features used, model(s) tried, accuracy/F1 achieved -->
+
+Binary classification predicting whether a mushroom is edible (`e`) or poisonous (`p`) from 22 categorical physical traits (cap shape, odor, gill color, spore print color, habitat, etc.) plus 2 numerical features (`number_of_bruises`, `ring-number`).
+
+**Workflow:**
+1. Identify column types: 2 numerical, 22 categorical, plus `ID`/`mushroom_id` as row identifiers
+2. Handle missing values — mode imputation for categoricals (`odor` ~46% missing, `stalk-root` ~2.7%, `ring-type` ~0.5%), median imputation for the numeric `ring-number` (~0.5% missing); imputing rather than dropping to avoid losing ~46% of the data over `odor` alone
+3. Check duplicates
+4. Outliers in `number_of_bruises` detected via IQR but **retained** — tree ensembles are robust to them, and extreme bruise counts may carry genuine biological signal
+5. EDA: `odor` and `spore-print-color` stand out as the most discriminative features between edible and poisonous mushrooms; habitat and bruising also show visible class separation
+6. Label Encoding for all 22 categorical features (one-hot would blow up dimensionality with 22 high-cardinality columns); `StandardScaler` on the 2 numeric features
+7. Trained and compared 7 classifiers: Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, AdaBoost, SVM, KNN
+8. Tuned Random Forest, Gradient Boosting, and Decision Tree via `GridSearchCV` (3-fold CV)
+
+**Result:** tree-based ensembles (Random Forest, Gradient Boosting) consistently outperformed linear/distance-based models. Best model: **tuned Random Forest**, achieving near-perfect validation accuracy — confirming mushroom toxicity is largely determined by observable physical traits.
+
+**Metric:** Accuracy
 
 ## Taxi Fare Prediction
 
-<!-- TODO: fill in — dataset source, features used (distance, time, location), model(s) tried, RMSE/MAE achieved -->
+Predicting total taxi fare (`total_amount`) from NYC-style trip data: pickup/dropoff timestamps, trip distance, passenger count, rate code, pickup/dropoff zone IDs, payment type, and surcharge fields.
+
+**Workflow:**
+1. Load data, check dtypes and null counts across all 17 columns
+2. Handle missing values (`passenger_count`, `RatecodeID`, `store_and_fwd_flag`, `congestion_surcharge`, `Airport_fee`, ~3.7% missing each) — median for numeric, mode for categorical
+3. Check duplicates (none found)
+4. Outlier handling — removed ~39% of rows with physically invalid values (negative fares/durations), then IQR-capped remaining outliers in `total_amount` and `trip_distance`
+5. Feature engineering — `trip_duration_mins`, `pickup_hour`, `pickup_dayofweek`, `pickup_month`, `is_weekend`, `is_rush_hour`, `is_night`, `speed_mph`, `dist_per_min`
+6. EDA: `total_amount` is right-skewed (most rides $10–$35); `trip_distance` and `trip_duration_mins` are the strongest correlates of fare; rush hours (7–10am, 4–7pm) and weekends show higher average fares; credit-card payments associate with longer, higher-fare trips
+7. Label-encoded `payment_type`, `StandardScaler` on 23 numeric features
+8. Trained and compared 7 models: Linear Regression, Ridge, Lasso, Decision Tree, Random Forest, Gradient Boosting, Extra Trees
+9. Tuned Decision Tree, Random Forest, and Gradient Boosting via `GridSearchCV`
+
+**Result:** tree-based ensembles clearly beat the linear models (RMSE ~5.22 for linear/Ridge/Lasso vs. ~3.85–4.06 for tuned trees). Best model: **tuned Gradient Boosting — RMSE 3.85, MAE 2.41, R² 0.949**.
+
+**Metric:** RMSE (R² and MAE also reported)
 
 ---
 
@@ -60,17 +90,3 @@ Predicting flight ticket prices from features like airline, source/destination, 
 - scikit-learn, XGBoost
 - PyTorch (segmentation project)
 - Jupyter Notebooks (developed on Kaggle)
-
-## How to Run
-
-1. Clone this repo:
-```bash
-   git clone <your-repo-url>
-   cd <your-repo-name>
-```
-2. Open the notebook of interest in Jupyter, Kaggle, or Google Colab.
-3. Each notebook is self-contained — install dependencies as prompted at the top of the notebook, and update the dataset path if running outside Kaggle.
-
-## Author
-
-<!-- your name / GitHub profile / LinkedIn -->
