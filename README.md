@@ -6,26 +6,14 @@ A collection of machine learning and deep learning notebooks covering classifica
 
 | Notebook | Task | Type |
 |---|---|---|
-| [`25f1000979-notebook-26t2.ipynb`] | Mechanical parts tray — pixel-level segmentation into 6 fastener classes | Semantic Segmentation |
+| [`Bank_Churn_Prediction_Report.ipynb`] | Predicting Churn by customers | Classification|
 | [`Flight_Price_Prediction.ipynb`] | Predicting flight ticket prices from airline, route, and booking features | Regression |
 | [`Mushroom_EdiblePoisonous_Prediction.ipynb`] | Classifying mushrooms as edible or poisonous from physical attributes | Classification |
 | [`Taxi_Fare_Prediction.ipynb`] | Predicting taxi fare amounts from trip details | Regression |
 
 ---
 
-## Mechanical Parts Segmentation
 
-Pixel-level semantic segmentation of a cluttered parts tray into six fastener classes: `hex_nut`, `washer`, `bolt`, `ball_bearing`, `spring`, `o_ring`.
-
-**Constraint:** trained fully from scratch — no pretrained weights of any kind.
-
-**Approach:**
-- Custom U-Net (GroupNorm, Kaiming init, deep-supervision heads)
-- Combined weighted cross-entropy + macro (per-class) soft Dice loss
-- Augmentation: flips/rotations, highlight-preserving color jitter, copy-paste augmentation for occlusion diversity
-- Test-time augmentation (flip averaging) at inference
-
-**Metric:** mean Dice coefficient, averaged over every (image, class) pair.
 
 ## Flight Price Prediction
 
